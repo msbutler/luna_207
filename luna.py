@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import sys
 
 # import our libraries
-from utils import cos_sim_sq
+# from utils import cos_sim_sq
 from nlm import NLM
 
 
@@ -83,8 +83,13 @@ class LUNA(NLM):
             grad_i = holy_grail[:,i,:]
             for j in range(i + 1, self.D_out):
                 grad_j = holy_grail[:,j,:]
-                score += cos_sim_sq(grad_i, grad_j)
+                score += self.cos_sim_sq(grad_i, grad_j)
         return score
+
+    def cos_sim_sq(self,grad_i, grad_j):
+        numer = np.dot(grad_i, grad_j.T)**2
+        denom = (np.dot(grad_i,grad_i.T)*np.dot(grad_j,grad_j.T))
+        return (numer/denom)[0][0]
 
     def default_finite_diff(self,W,x):
         '''
