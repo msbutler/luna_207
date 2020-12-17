@@ -66,10 +66,12 @@ def get_bayes_lr_predictives(noise_var,samples,x_test_matrix,n=100):
 
 def viz_pp_samples(x_train,y_train,x_test,posterior_predictive_samples,title_text, multi=None, ylim = [-150,150],gen_func=utils.default_gen_func):
     
-    if multi is not None:
-        ax = multi
-    else:
+    if multi ==None:
         fig, ax = plt.subplots(1, 1, figsize=(10,10))
+    
+    else:
+        ax = multi
+
         
     # Compute the 97.5 th percentile of the posterior predictive predictions
     pp_upper = np.percentile(posterior_predictive_samples, 97.5, axis=0)
@@ -88,16 +90,11 @@ def viz_pp_samples(x_train,y_train,x_test,posterior_predictive_samples,title_tex
     ax.set_title(title_text)
     ax.set_ylim(ylim)
     
-    if multi is not None:
-        return ax
-    else:
+    if multi == None:
         ax.legend()
         return fig
-
-        
-    
-
-
+    else:
+        return ax
 
 def bayes_lr_logl(prior_var,noise_var,x_train,y_train,x_test,y_test):
     '''

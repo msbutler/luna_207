@@ -110,10 +110,6 @@ class Feedforward:
 
         return objective, grad(objective)
 
-    """
-    - the params dictionary specificies a bunch of optimization parameters
-    - the reg_param parameter regularizes the objection function
-    """
     def fit(self, x_train, y_train, params, reg_param=None):
 
         assert x_train.shape[0] == self.params['D_in']

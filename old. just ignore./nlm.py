@@ -41,7 +41,6 @@ class NLM():
     def train(self, X, Y, params):
         # Fit Weights
         self.ff.fit(X, Y, params)
-        #change to self.ff.fit(X, Y, params,self.regularization_param)
 
         # Transform X with Feature Map for Bayes Reg
             # i.e. returns last layer by setting final_layer_out to True
