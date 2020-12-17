@@ -66,6 +66,12 @@ class LUNA(NLM):
 
         self.grad_func_specs = grad_func_specs
 
+        self.mse_trace = []
+        self.reg_trace = []
+        self.sim_score_trace = []
+
+
+
 
     def similarity_score(self, W, x):
         '''
@@ -95,6 +101,7 @@ class LUNA(NLM):
             for j in range(i + 1, self.D_out):
                 grad_j = holy_grail[:,j,:]
                 score += self.cos_sim_sq(grad_i, grad_j)
+
         return score
 
     def cos_sim_sq(self,grad_i, grad_j):
@@ -186,12 +193,17 @@ class LUNA(NLM):
             - L_fit - L_sim = function handle for objective function [scalar]
             '''
 
-            #aux_output = self.ff.forward(W, x_train)
+            mean_mse = self.mean_mean_sq_error(W, x_train, y_train)
+            reg_penalty = np.linalg.norm(W)**2
+            sim_score = self.similarity_score(W, x_train)
 
-            L_sim = self.similarity_param*self.similarity_score(W, x_train)
+            if isinstance(reg_penalty,float):
+                self.mse_trace.append(mean_mse)
+                self.reg_trace.append(reg_penalty)
+                self.sim_score_trace.append(sim_score)
 
-            L_fit = self.mean_mean_sq_error(W, x_train, y_train) - self.regularization_param*np.linalg.norm(W)**2
 
-            return L_fit - L_sim
+
+            return mean_mse + self.regularization_param*reg_penalty + self.similarity_param*sim_score
 
         return objective, grad(objective)
