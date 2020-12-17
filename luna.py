@@ -100,7 +100,7 @@ class LUNA(NLM):
             grad_i = holy_grail[:,i,:]
             for j in range(i + 1, self.D_out):
                 grad_j = holy_grail[:,j,:]
-                score += self.cos_sim_sq(grad_i, grad_j)
+                score = score + self.cos_sim_sq(grad_i, grad_j)
 
         return score
 
@@ -124,13 +124,14 @@ class LUNA(NLM):
         eps = np.random.normal(0,0.1,size=x.shape[1])
 
         #iterate over features of raw input data (rows of x)
-        out = np.zeros((self.D_in, self.D_out, x.shape[1]))
+        #out = np.zeros((self.D_in, self.D_out, x.shape[1]))
 
         #evaluate function at x
         f_ex = self.ff.forward(W, x)
 
         assert x.shape[0] == self.D_in
-
+        
+        res_l = []
         #for one dimension at a time
         for i in range(x.shape[0]):
 
@@ -141,10 +142,13 @@ class LUNA(NLM):
 
             # out dim X #obs
             res = (f_eps - f_ex)/eps
+            res_l.append(res)
             #out[i,:,:] = res[0] # value wise division, different epsilon for each column
             # NEED TO FIX FOR MULTIDIMENSIONAL INPUT DATA
-
-        return res
+        
+        out = np.concatenate(res_l)
+        #print(out.shape)
+        return out
 
     def mean_mean_sq_error(self, W, x_train, y_train):
         '''
