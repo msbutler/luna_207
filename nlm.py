@@ -32,12 +32,14 @@ class NLM():
 
       - run predict() to get distribution of ys, given x test
     """
-    def __init__(self, prior_var, y_noise_var, regularization_param, architecture, random_state, objective_function=None):
+    def __init__(self, prior_var, y_noise_var, regularization_param, architecture, random_state,
+                objective_function=None, logistic =False):
 
         self.ff = Feedforward(architecture, random = random_state, objective_function=objective_function)
         self.regularization_param = regularization_param
         self.prior_var = prior_var # prior variance final layer weights
         self.y_noise_var = y_noise_var # variance of noise, distributed normally
+        self.logistic = logistic
 
     def train(self, X, Y, params):
         # Fit Weights
@@ -68,14 +70,16 @@ class NLM():
             return bh.get_bayes_lr_predictives(self.y_noise_var,
                                                 prior_samples,
                                                 final_layer.T[:,:,0],
-                                                n=100)
+                                                n=100,
+                                                logistic = self.logistic)
 
         # return posterior predictives and posterior predictive samples
         else:
             return  bh.get_bayes_lr_predictives(self.y_noise_var,
                                                 self.posterior_samples,
                                                 final_layer.T[:,:,0],
-                                                n=100)
+                                                n=100,
+                                                logistic = self.logistic)
 
     def get_log_l(self,X_train,Y_train,X_test,Y_test):
         """ return log likilood of nueral linear model, equivalent to calculating

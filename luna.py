@@ -33,7 +33,8 @@ class LUNA(NLM):
     """
 
 
-    def __init__(self, prior_var, y_noise_var, regularization_param, similarity_param, architecture, random, grad_func_specs = None):
+    def __init__(self, prior_var, y_noise_var, regularization_param, similarity_param,
+                architecture, random, grad_func_specs = None, logistic = False):
         '''
 
         Input attributes:
@@ -55,7 +56,7 @@ class LUNA(NLM):
         self.similarity_param = similarity_param
 
         #inherit from NLM, override objective func
-        super().__init__(prior_var, y_noise_var, regularization_param, architecture, random, self.make_objective)
+        super().__init__(prior_var, y_noise_var, regularization_param, architecture, random, self.make_objective,logistic)
 
         self.D, self.D_in, self.D_out, self.H = self.ff.D, architecture['input_dim'], architecture['output_dim'], architecture['width']
 
