@@ -1,4 +1,3 @@
-# primary authors: michael and elaine 
 
 from autograd import numpy as np
 from autograd import grad
@@ -54,25 +53,31 @@ def get_bayes_lr_posterior(prior_var, noise_var, x_matrix, y_matrix, samples=100
 # samples either come from prior or posterior distribution
 # predictions: predicts each X_test obs on each sample coefficient from samples
 # predictive_samples: samples from each prediction distribution, randomness comes from noise var
-def get_bayes_lr_predictives(noise_var,samples,x_test_matrix,n=100):
-
+def get_bayes_lr_predictives(noise_var,samples,x_test_matrix,n=100,logistic = False):
+    print("default is logistic !!!!!")
     # calculate predictions and predictive samples
     predictions = np.dot(samples, x_test_matrix.T)
 
     predictive_samples = predictions[np.newaxis, :, :] + np.random.normal(0, noise_var**0.5, size=(n, predictions.shape[0],predictions.shape[1]))
+
+    if logistic == True:
+        def sigmoid(x):
+            return 1/(1 + np.exp(-x))
+        predictive_samples = sigmoid(predictive_samples)
     predictive_samples = predictive_samples.reshape((n * predictions.shape[0], predictions.shape[1]))
+
 
     return predictions, predictive_samples
 
 def viz_pp_samples(x_train,y_train,x_test,posterior_predictive_samples,title_text, multi=None, ylim = [-150,150],gen_func=utils.default_gen_func):
-    
+
     if multi ==None:
         fig, ax = plt.subplots(1, 1, figsize=(10,10))
-    
+
     else:
         ax = multi
 
-        
+
     # Compute the 97.5 th percentile of the posterior predictive predictions
     pp_upper = np.percentile(posterior_predictive_samples, 97.5, axis=0)
 
@@ -85,11 +90,11 @@ def viz_pp_samples(x_train,y_train,x_test,posterior_predictive_samples,title_tex
     ax.plot(x_test, pp_mean, color='blue', label = 'mean prediction') # visualize the mean of the posterior predictive
     ax.fill_between(x_test, pp_upper, pp_lower, color='blue', alpha=0.3, label='95% Pred. Interval') # visualize the 95% posterior predictive interval
     ax.scatter(x_train, y_train, color='red', label='training data') # visualize the training data
-    
+
     ax.plot(x_test,[gen_func(x) for x in x_test], color = 'black', label = 'true function')
     ax.set_title(title_text)
     ax.set_ylim(ylim)
-    
+
     if multi == None:
         ax.legend()
         return fig

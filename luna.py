@@ -1,9 +1,4 @@
 
-
-
-
-#Primary Authors: Michael and Elaine
-
 # import standard libraries
 from autograd import numpy as np
 from autograd import grad
@@ -130,7 +125,7 @@ class LUNA(NLM):
         f_ex = self.ff.forward(W, x)
 
         assert x.shape[0] == self.D_in
-        
+
         res_l = []
         #for one dimension at a time
         for i in range(x.shape[0]):
@@ -145,7 +140,7 @@ class LUNA(NLM):
             res_l.append(res)
             #out[i,:,:] = res[0] # value wise division, different epsilon for each column
             # NEED TO FIX FOR MULTIDIMENSIONAL INPUT DATA
-        
+
         out = np.concatenate(res_l)
         #print(out.shape)
         return out

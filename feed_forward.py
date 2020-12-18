@@ -1,4 +1,4 @@
-# primary author: wei wei pan, modified by Michael and Elaine and Victor
+# primary author: wei wei pan
 
 from autograd import numpy as np
 from autograd import grad
@@ -9,7 +9,7 @@ import pandas as pd
 import numpy
 import matplotlib.pyplot as plt
 import sys
-    
+
 class Feedforward:
     def __init__(self, architecture, random=None, weights=None, objective_function=None):
         self.params = {'H': architecture['width'],
@@ -38,12 +38,12 @@ class Feedforward:
 
         self.objective_trace = np.empty((1, 1))
         self.weight_trace = np.empty((1, self.D))
-            
+
         if objective_function:
             self.make_objective = objective_function
         else:
-            self.make_objective = self.default_make_objective    
-        
+            self.make_objective = self.default_make_objective
+
 
 
     def forward(self, weights, x, final_layer_out=False):
@@ -97,7 +97,7 @@ class Feedforward:
             return final_layer
         else:
             return output
-    
+
     """Default objective Neural network function"""
     def default_make_objective(self, x_train, y_train, reg_param):
 
@@ -111,7 +111,7 @@ class Feedforward:
                 return mean_error
 
         return objective, grad(objective)
-    
+
     """
     - the params dictionary specificies a bunch of optimization parameters
     - the reg_param parameter regularizes the objection function
@@ -181,8 +181,8 @@ class Feedforward:
                     self.objective_trace = self.objective_trace[1:]
                     self.weight_trace = self.weight_trace[1:]
             else:
-                optimal_weights,weight_trace,objective_trace = optimizer(self.objective, 
-                                                                         weights_init, 
+                optimal_weights,weight_trace,objective_trace = optimizer(self.objective,
+                                                                         weights_init,
                                                                          min_step_size=10**(-8),
                                                                          max_iter=max_iteration)
                 local_opt = self.objective(optimal_weights, 1.)
@@ -192,4 +192,3 @@ class Feedforward:
                     self.weight_trace = weight_trace
 
             weights_init = self.random.normal(0, 1, size=(1, self.D))
-    
