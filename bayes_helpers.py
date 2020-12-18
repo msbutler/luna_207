@@ -54,13 +54,14 @@ def get_bayes_lr_posterior(prior_var, noise_var, x_matrix, y_matrix, samples=100
 # predictions: predicts each X_test obs on each sample coefficient from samples
 # predictive_samples: samples from each prediction distribution, randomness comes from noise var
 def get_bayes_lr_predictives(noise_var,samples,x_test_matrix,n=100,logistic = False):
-    print("default is logistic !!!!!")
+
     # calculate predictions and predictive samples
     predictions = np.dot(samples, x_test_matrix.T)
 
     predictive_samples = predictions[np.newaxis, :, :] + np.random.normal(0, noise_var**0.5, size=(n, predictions.shape[0],predictions.shape[1]))
 
     if logistic == True:
+        print("conducting bayesian logistic regression !!!!!")
         def sigmoid(x):
             return 1/(1 + np.exp(-x))
         predictive_samples = sigmoid(predictive_samples)
