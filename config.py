@@ -1,4 +1,3 @@
-#primary authors: michael and elaine
 
 from autograd import numpy as np
 

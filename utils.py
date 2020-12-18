@@ -1,4 +1,3 @@
-#primary author: Michael and elaine
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -28,7 +27,7 @@ def generate_data(random_seed,
     x_train_max = gap_size/2 + region_size
     #training x
     x_train = np.hstack((np.linspace(x_train_min, -gap_size/2, number_of_points//2), np.linspace(gap_size/2, x_train_max, number_of_points//2)))
-    
+
 
     #y is equal to f(x) plus gaussian noise
     y_train = f(x_train) + np.random.normal(0, noise_variance**0.5, number_of_points)
@@ -53,3 +52,47 @@ def run_toy_nn(nn_model,architecture,params,random,x_train,y_train,x_test):
     plt.plot(x_test.flatten(), y_test_pred.flatten(), color='red', label='learned neural network function')
     plt.legend(loc='best')
     plt.show()
+
+def luna_snap(luna,iters,x_test,x_train,y_train):
+    fig,ax = plt.subplots(len(iters),2 ,figsize=(10,20))
+    c = 0
+    for i in iters:
+
+        # get weights at iter
+        i_weights = luna.ff.weight_trace[i].reshape(1,-1)
+
+        ##############
+        # find auxilary output at iter
+        ###############
+        aux_y = luna.ff.forward(i_weights,x_test)[0]
+
+        #plot each function
+        for j in range(aux_y.shape[0]):
+            ax[c][0].plot(x_test.flatten(),aux_y[j].flatten(), c = 'blue', alpha = 0.4)
+            ax[c][0].set_title(f"Iter = {i}")
+
+        ###############
+        # find posterior predictive samples at iter
+        ###############
+        # Transform X with Feature Map for Bayes Reg
+        final_layer_train = luna.ff.forward(i_weights, x_train, final_layer_out=True)
+
+        # Conduct Bayes Reg on Final Layer
+        i_posterior_samples =bh.get_bayes_lr_posterior(luna.prior_var,
+                                                luna.y_noise_var,
+                                                final_layer_train.T[:,:,0],
+                                                y_train.T,
+                                                samples=100)
+        
+        # get posterior predictives
+        final_layer_test = luna.ff.forward(i_weights, x_test, final_layer_out=True)
+
+        i_predictives, i_predictive_samples = bh.get_bayes_lr_predictives(luna.y_noise_var,
+                                                i_posterior_samples,
+                                                final_layer_test.T[:,:,0],
+                                                n=100)
+
+        ax[c][1] = bh.viz_pp_samples(x_train, y_train,x_test.flatten(),i_predictive_samples,"", ax[c][1])
+
+        c+=1
+    fig.savefig("scratch/luna_training.png")
